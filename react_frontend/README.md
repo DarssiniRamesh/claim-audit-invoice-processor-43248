@@ -27,6 +27,25 @@ Launches the test runner in interactive watch mode.
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
+## Environment Configuration
+
+To avoid CORS issues and ensure the frontend targets the correct backend origin:
+- Set REACT_APP_API_BASE_URL to the FastAPI backend origin (must include protocol, host, and port 3001).
+- This variable is read at build time by Create React App. After changing it, restart the dev server or rebuild.
+- Axios is configured with withCredentials=true so cookies/sessions (if used) are sent. Ensure backend CORS allows credentials and explicitly allows the frontend origin.
+
+Steps:
+1. Copy .env.example to .env
+2. For local development:
+   REACT_APP_API_BASE_URL=http://localhost:3001
+3. For cloud deployment on this workspace:
+   REACT_APP_API_BASE_URL=https://vscode-internal-20803-beta.beta01.cloud.kavia.ai:3001
+
+Backend CORS notes:
+- The backend must set CORS to allow the exact frontend origin (e.g., https://vscode-internal-20803-beta.beta01.cloud.kavia.ai:3000)
+- Enable allow_credentials=True
+- If using cookies, set them with SameSite=None; Secure when using HTTPS
+
 ## Customization
 
 ### Colors
