@@ -9,7 +9,8 @@ import type {
   LineItemUpdate,
   UploadResponse,
   ValidateRequest,
-  ValidateResponse
+  ValidateResponse,
+  AuditFindingOut
 } from '../types/api';
 
 export interface InvoiceListParams {
@@ -53,6 +54,25 @@ export function useInvoice(invoiceId?: string) {
   });
 }
 
+/**
+ * Normalize possibly legacy audit responses (flat findings array) into the new structured shape.
+ */
+function normalizeAuditResponse(raw: any): AuditReport {
+  // If response already adheres to the new structure, return as-is.
+  if (raw && typeof raw === 'object' && 'general' in raw && 'purchase' in raw) {
+    return raw as AuditReport;
+  }
+  // Legacy fallback: { invoice_id, findings: AuditFindingOut[] }
+  const legacyFindings: AuditFindingOut[] = Array.isArray(raw?.findings) ? raw.findings : [];
+  const invoice_id: string = raw?.invoice_id ?? '';
+  const normalized: AuditReport = {
+    invoice_id,
+    general: { findings: legacyFindings },
+    purchase: { tax_rate_inferred: null, items: [] }
+  };
+  return normalized;
+}
+
 // PUBLIC_INTERFACE
 export function useAudit(invoiceId?: string) {
   /** Fetch audit report for an invoice. */
@@ -60,8 +80,8 @@ export function useAudit(invoiceId?: string) {
     queryKey: ['audit', invoiceId],
     enabled: Boolean(invoiceId),
     queryFn: async () => {
-      const res = await api.get<AuditReport>(`/api/invoices/${invoiceId}/audit`);
-      return res.data;
+      const res = await api.get(`/api/invoices/${invoiceId}/audit`);
+      return normalizeAuditResponse(res.data);
     }
   });
 }

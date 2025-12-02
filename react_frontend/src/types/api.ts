@@ -1,5 +1,8 @@
 export type Nullable<T> = T | null;
 
+/**
+ * Structured audit finding.
+ */
 export interface AuditFindingOut {
   id: number;
   code: string;
@@ -8,9 +11,44 @@ export interface AuditFindingOut {
   line_item_id?: Nullable<number>;
 }
 
+/**
+ * General audit section that groups high-level invoice checks and rule-based findings.
+ */
+export interface GeneralAuditSection {
+  findings: AuditFindingOut[];
+}
+
+/**
+ * Per-purchase audit view with tax extraction and validation.
+ */
+export interface PurchaseLineItemAudit {
+  line_item_id: number;
+  description: string;
+  quantity?: Nullable<number>;
+  unit_price?: Nullable<number>;
+  total_price?: Nullable<number>;
+  currency?: Nullable<string>;
+  tax_amount?: Nullable<number>;
+  expected_tax?: Nullable<number>;
+  tax_rate_used?: Nullable<number>;
+  tax_ok?: Nullable<boolean>;
+}
+
+/**
+ * Purchase audit section: inferred tax rate and per-line tax validation results.
+ */
+export interface PurchaseAuditSection {
+  tax_rate_inferred?: Nullable<number>;
+  items: PurchaseLineItemAudit[];
+}
+
+/**
+ * Audit report for an invoice with General and Purchase sections.
+ */
 export interface AuditReport {
   invoice_id: string;
-  findings: AuditFindingOut[];
+  general: GeneralAuditSection;
+  purchase: PurchaseAuditSection;
 }
 
 export interface BenchmarkOut {
@@ -45,10 +83,12 @@ export interface LineItemOut {
   unit: Nullable<string>;
   unit_price: Nullable<number>;
   total_price: Nullable<number>;
+  currency?: Nullable<string>;
   category: Nullable<string>;
   normalized_unit: Nullable<string>;
   normalized_quantity: Nullable<number>;
   normalized_unit_price: Nullable<number>;
+  tax_amount?: Nullable<number>;
   flagged_high_value: boolean;
 }
 
