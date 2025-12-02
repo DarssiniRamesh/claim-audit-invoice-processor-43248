@@ -13,7 +13,7 @@ function computeDefaultBaseUrl(): string {
     const port = '3001';
     return `${protocol}//${hostname}:${port}`;
   } catch {
-    return 'http://localhost:3001';
+    return 'https://vscode-internal-20803-beta.beta01.cloud.kavia.ai:3001';
   }
 }
 
