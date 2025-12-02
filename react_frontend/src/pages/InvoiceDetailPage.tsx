@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Box, Button, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Button, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { buildHeaderUpdates, toLineItemUpdate, useInvoice, useValidateInvoice } from '../hooks/invoices';
 import type { InvoiceOut, LineItemOut, LineItemUpdate, ValidateRequest } from '../types/api';
